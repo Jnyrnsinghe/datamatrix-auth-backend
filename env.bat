@@ -1,0 +1,10 @@
+APP_NAME=DataMatrix Auth Backend
+APP_ENV=development
+DATABASE_URL=postgresql+psycopg://postgres:q-m@_ZAWf8-Fb,@db.dfxiiplkxdussiuqrwom.supabase.co:5432/postgres
+JWT_SECRET_KEY=dzfdgvstfxbvfvdfz43tw45yrefs
+JWT_ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_DAYS=7
+OFFLINE_GRACE_DAYS=3
+TELEGRAM_BOT_TOKEN=8733534782:AAGQkgdWa4JgWv5F4f5V2J4vUBReexd1NlM
+TELEGRAM_CHAT_ID=689889874
+ADMIN_API_KEY=aergvfezvessfcret4t4casfreafceaf
