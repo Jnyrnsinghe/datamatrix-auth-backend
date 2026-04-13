@@ -21,6 +21,14 @@ from app.security import create_access_token, decode_access_token, hash_password
 app = FastAPI(title=settings.app_name)
 
 
+def ensure_utc_datetime(value: datetime | None) -> datetime | None:
+    if value is None:
+        return None
+    if value.tzinfo is None:
+        return value.replace(tzinfo=timezone.utc)
+    return value.astimezone(timezone.utc)
+
+
 def require_admin_api_key(x_api_key: str | None = Header(default=None)) -> None:
     if not settings.admin_api_key or x_api_key != settings.admin_api_key:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid admin API key")
@@ -93,11 +101,12 @@ def validate_token(payload: TokenValidationRequest, db: Session = Depends(get_db
 
     username = token_payload.get("sub")
     session = db.scalar(select(SessionToken).where(SessionToken.token == payload.token))
+    session_expires_at = ensure_utc_datetime(session.expires_at) if session else None
 
-    if session is None or session.expires_at < datetime.now(timezone.utc):
+    if session is None or session_expires_at is None or session_expires_at < datetime.now(timezone.utc):
         return TokenValidationResponse(valid=False)
 
-    return TokenValidationResponse(valid=True, username=username, expires_at=session.expires_at)
+    return TokenValidationResponse(valid=True, username=username, expires_at=session_expires_at)
 
 
 @app.post("/admin/create-user", response_model=UserResponse)
